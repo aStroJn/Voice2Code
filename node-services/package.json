@@ -1,0 +1,16 @@
+{
+  "name": "echo-assist-services",
+  "version": "0.1.0",
+  "description": "Backend services for EchoAssist",
+  "main": "ipcBridge.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nut-tree-fork/nut-js": "^4.2.6",
+    "node-global-key-listener": "^0.1.1"
+  }
+}

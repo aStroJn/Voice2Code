@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice2Code</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+      color: white;
+      font-family: sans-serif;
+    }
+
+    .hud-listening {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: rgba(30, 34, 43, 0.96);
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 16px 0 16px 16px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 220px;
+      z-index: 1000;
+      
+      transform: translateY(-120%);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(.7,.3,.02,1.07), opacity 0.22s;
+      pointer-events: none;
+    }
+
+    .hud-listening.is-listening {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .hud-mic {
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: #282b3a;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(70,100,255,0.08);
+    }
+
+    .hud-text {
+      font-size: 1.05rem;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+    .hud-visualizer {
+      display: flex;
+      gap: 4px;
+      align-items: flex-end;
+      height: 26px;
+      margin-left: 14px;
+    }
+
+    .hud-bar {
+      width: 6px;
+      background: linear-gradient(180deg, #2dbbff 20%, #6f42ff 100%);
+      border-radius: 6px;
+      transition: height 0.14s cubic-bezier(.66,.04,.42,1.1);
+      height: 12px;
+      min-height: 6px;
+      max-height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud-listening" id="hud">
+    <span class="hud-mic">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <rect x="9" y="2" width="6" height="12" rx="3" fill="#27bbf3"/>
+        <rect x="11" y="16" width="2" height="4" rx="1" fill="#4b41ff"/>
+        <rect x="7" y="20" width="10" height="2" rx="1" fill="#7667ef"/>
+      </svg>
+    </span>
+    <span class="hud-text" id="hudText">Listening...</span>
+    <span class="hud-visualizer" id="hudVisualizer">
+      <span class="hud-bar"></span>
+      <span class="hud-bar"></span>
+      <span class="hud-bar"></span>
+    </span>
+  </div>
+
+  <script src="./hud.js"></script>
+</body>
+</html>

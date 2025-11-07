@@ -1,0 +1,4 @@
+{
+  "whisper_cpp_path": "(1)\\backend\\models\\whisper.cpp",
+  "ollama_endpoint": "http://localhost:11434/api/generate"
+}

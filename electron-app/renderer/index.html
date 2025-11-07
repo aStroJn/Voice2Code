@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceCoder Bootloader</title>
+    <link rel="icon" type="image/png" href="../assets/icons/icon.png">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        /* --- Reset and Global Styles --- */
+        :root {
+            --blue-600: #2563eb;
+            --gray-50: #f9fafb;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --green-500: #22c55e;
+            --white: #ffffff;
+        }
+
+        body {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gray-50);
+            overflow: hidden;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+
+        /* --- Main Container --- */
+        #loading-window {
+            width: 100%;
+            max-width: 28rem; /* 448px */
+            padding-left: 2rem;
+            padding-right: 2rem;
+            opacity: 0; /* Initial state for GSAP */
+        }
+
+        /* --- Logo and Title Section --- */
+        .logo-title-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2.75rem; /* 44px */
+        }
+
+        #logo-container {
+            position: relative;
+            margin-bottom: 1.25rem; /* 20px */
+            transform: scale(0); /* Initial state for GSAP */
+        }
+
+        .logo-box {
+            width: 5rem; /* 80px */
+            height: 5rem; /* 80px */
+            border-radius: 1rem; /* 16px */
+            background-color: var(--blue-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -2px rgba(59, 130, 246, 0.3);
+        }
+        
+        .logo-box > i {
+            width: 2.5rem; /* 40px */
+            height: 2.5rem; /* 40px */
+            color: var(--white);
+        }
+
+        #logo-pulse {
+            position: absolute;
+            inset: 0;
+            border-radius: 1rem; /* 16px */
+            background-color: rgba(37, 99, 235, 0.2);
+            z-index: -10;
+        }
+
+        #title-container {
+            opacity: 0; /* Initial state for GSAP */
+            transform: translateY(-0.5rem); /* Initial state for GSAP */
+        }
+
+        #title-container h1 {
+            margin-bottom: 0.375rem; /* 6px */
+            text-align: center;
+            font-size: 1.5rem; /* 24px */
+            line-height: 2rem; /* 32px */
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        #title-container p {
+            color: var(--gray-500);
+            text-align: center;
+        }
+
+        /* --- Progress Bar --- */
+        #progress-container {
+            margin-bottom: 1.5rem; /* 24px */
+            opacity: 0; /* Initial state for GSAP */
+        }
+
+        .progress-track {
+            height: 0.5rem; /* 8px */
+            width: 100%;
+            background-color: var(--gray-200);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background-color: var(--blue-600);
+            border-radius: 9999px;
+        }
+        
+        /* --- Service Status Section --- */
+        #service-container {
+            position: relative;
+            height: 4rem; /* 64px */
+            margin-bottom: 1.5rem; /* 24px */
+            overflow: hidden;
+        }
+        
+        #service-card {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem; /* 16px */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem; /* 8px */
+            background-color: var(--white);
+            border: 2px solid var(--gray-300);
+            transition: border-color 0.4s ease-in-out;
+            opacity: 0; /* Initial state for GSAP */
+        }
+        
+        #service-card.checked {
+            border-color: var(--green-500);
+        }
+
+        #service-checkbox {
+            height: 1.25rem; /* 20px */
+            width: 1.25rem; /* 20px */
+            border: 2px solid var(--gray-300);
+            border-radius: 0.375rem; /* 6px */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.4s, border-color 0.4s;
+        }
+
+        #check-icon {
+            width: 1rem; /* 16px */
+            height: 1rem; /* 16px */
+            color: var(--white);
+            transform: scale(0); /* Initial state for GSAP */
+        }
+
+        #service-name {
+            color: var(--gray-800);
+            font-weight: 500;
+        }
+
+        /* --- Status Text --- */
+        #status-text {
+            text-align: center;
+            opacity: 0; /* Initial state for GSAP */
+        }
+
+        #status-message {
+            color: var(--gray-500);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-window">
+        <div class="logo-title-wrapper">
+            <div id="logo-container">
+                <div class="logo-box">
+                    <i data-feather="mic"></i>
+                </div>
+                <div id="logo-pulse"></div>
+            </div>
+            
+            <div id="title-container">
+                <h1>Voice2Code</h1>
+                <p>EchoAssist</p>
+            </div>
+        </div>
+
+        <div id="progress-container">
+            <div class="progress-track">
+                <div id="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="service-container">
+            <div id="service-card">
+                <div id="service-checkbox">
+                    <svg id="check-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <span id="service-name"></span>
+            </div>
+        </div>
+
+        <div id="status-text">
+            <p id="status-message">Initializing...</p>
+        </div>
+    </div>
+
+    <script>
+        // The JavaScript remains the same as it does not depend on Tailwind.
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+
+            // --- Cache DOM Elements ---
+            const progressBar = document.getElementById('progress-bar');
+            const serviceCard = document.getElementById('service-card');
+            const serviceName = document.getElementById('service-name');
+            const serviceCheckbox = document.getElementById('service-checkbox');
+            const checkIcon = document.getElementById('check-icon');
+            const statusMessage = document.getElementById('status-message');
+
+            // --- Configuration ---
+            const services = [
+                { name: "Electron Interface" },
+                { name: "Python Backend" },
+                { name: "Node Services" }
+            ];
+
+            // --- GSAP Animation Timeline ---
+            const tl = gsap.timeline();
+
+            // 1. Initial scene fade-in and setup
+            tl.to("#loading-window", { opacity: 1, duration: 0.5, ease: "power1.inOut" })
+              .to("#logo-container", { scale: 1, duration: 0.8, ease: "elastic.out(1, 0.6)" }, "-=0.2")
+              .to("#logo-pulse", { scale: 1.5, opacity: 0, duration: 1.5, repeat: -1, ease: "power1.inOut" }, "<")
+              .to("#title-container", { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, "-=1.2")
+              .to("#progress-container", { opacity: 1, duration: 0.5 }, "-=0.8")
+              .to("#status-text", { opacity: 1, duration: 0.5 }, "<");
+
+            // 2. Dynamically create animations for each service
+            services.forEach((service, index) => {
+                const progress = ((index + 1) / services.length) * 100;
+                
+                tl.fromTo(serviceCard, 
+                    { x: '100%', opacity: 0 }, 
+                    { 
+                        x: '0%', 
+                        opacity: 1, 
+                        duration: 0.6, 
+                        ease: "power2.out",
+                        onStart: () => {
+                            statusMessage.textContent = `Starting ${service.name}...`;
+                            serviceName.textContent = service.name;
+                        }
+                    }
+                );
+                
+                tl.to(serviceCard, {
+                    className: 'service-card checked', // Use className to add 'checked'
+                    duration: 0.4,
+                    delay: 0.8
+                })
+                .to(serviceCheckbox, { 
+                    backgroundColor: '#22c55e',
+                    borderColor: '#22c55e',
+                    duration: 0.4 
+                }, "<")
+                .to(checkIcon, { 
+                    scale: 1, 
+                    duration: 0.4, 
+                    ease: 'back.out(1.7)' 
+                }, "-=0.2")
+                .to(progressBar, { 
+                    width: progress + '%', 
+                    duration: 0.6, 
+                    ease: "power2.inOut" 
+                }, "<");
+                
+                if (index < services.length - 1) {
+                    tl.to(serviceCard, {
+                        x: '-100%',
+                        opacity: 0,
+                        duration: 0.6,
+                        ease: "power2.in",
+                        delay: 0.3,
+                        onComplete: () => {
+                            // Reset card state for the next one
+                            gsap.set(serviceCard, { className: 'service-card' });
+                            gsap.set(serviceCheckbox, { backgroundColor: 'transparent', borderColor: '#d1d5db' });
+                            gsap.set(checkIcon, { scale: 0 });
+                        }
+                    });
+                }
+            });
+
+            // 3. Finalization animation
+            tl.to(statusMessage, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => statusMessage.textContent = "System Ready! ✅"
+            })
+            .to(statusMessage, { opacity: 1, duration: 0.5 })
+            .to("#logo-container", { scale: 1.1, duration: 0.3, yoyo: true, repeat: 1, ease: "power1.inOut" }, "-=0.5")
+            .add(() => {
+                setTimeout(() => {
+                    window.electronAPI.closeLoadingWindow();
+                }, 1500); // 1.5 second delay after animations finish
+            });
+        });
+    </script>
+</body>
+</html>

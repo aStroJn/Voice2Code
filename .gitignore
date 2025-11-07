@@ -1,0 +1,15 @@
+electron-app/node_modules/electron/dist/electron.exe
+
+#Gemini files
+/.genkit
+GEMINI.md
+
+# Backend/Models files
+backend/models/ffmpeg/ffmpeg.exe
+backend/models/ggml-base.bin
+backend/models/whisper.cpp
+
+# Useless Scripts
+PROJECT_ANALYSIS.md
+
+
