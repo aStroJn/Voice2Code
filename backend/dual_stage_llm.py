@@ -53,7 +53,6 @@ CODER_SCHEMA = {
 }
 
 def strip_fencing(text: str) -> str:
-    """Remove any markdown code fences or language labels like ```python."""
     if not text:
         return ""
     t = text.strip()
@@ -110,10 +109,7 @@ def improve_transcript(transcript_text):
 
 def generate_code_from_task(task_json):
     system_prompt = (
-    "You are a precise software engineer that outputs raw source code only. "
-    "You receive a JSON task description and must respond in JSON with keys: "
-    '"language", "files", "explanation" (optional), and "tests" (optional). '
-    "Each file object must contain a 'path' and a 'content' key. "
+    "You are a precise software engineer. You receive a JSON task object. Produce the code to complete the task."
     "In the 'content' field, write only the raw code — "
     "DO NOT use markdown fences, backticks, syntax highlighting tags, or commentary. "
     "No ```python``` fences, no markdown, no explanations outside the JSON structure."
