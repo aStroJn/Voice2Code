@@ -1,7 +1,7 @@
 {
-  "name": "echo-assist-services",
+  "name": "voice2code-services",
   "version": "0.1.0",
-  "description": "Backend services for EchoAssist",
+  "description": "Backend services for Voice2Code",
   "main": "ipcBridge.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

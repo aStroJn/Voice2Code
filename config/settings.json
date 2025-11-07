@@ -3,5 +3,11 @@
   "language": "python",
   "ollama_model": "gemma3:1b",
   "master_prompt": "You are an expert Python programmer.\nA user has provided a voice command to create a code snippet.\n Example User's request: make a function it should add two numbers, call it 'sum'\n\nGenerate only the Python code to fulfill this request. Do not add any\nexplanations, conversational text, or markdown formatting like ```python.\nProvide only the code snippet. and don't create/define new functions until said by user\nUSER REQUEST INPUT:",
-  "whisper_cpp_path": "(1)\\backend\\models\\whisper.cpp"
-} 
+  "whisper_cpp_path": "./backend/models/whisper.cpp",
+  "OLLAMA_ENDPOINT": "http://127.0.0.1:11434/api/generate",
+  "OLLAMA_TIMEOUT_SECONDS": 60,
+  "LLM_RETRY_COUNT": 2,
+  "IMPROVER_MAX_TOKENS": 512,
+  "CODER_MAX_TOKENS": 1600,
+  "USE_DUAL_STAGE": true
+}

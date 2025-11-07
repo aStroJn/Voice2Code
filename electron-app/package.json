@@ -1,7 +1,7 @@
 {
-  "name": "echo-assist",
+  "name": "voice2code",
   "version": "0.1.0",
-  "description": "Voice to code widget",
+  "description": "Voice2Code widget",
   "main": "main.js",
   "scripts": {
     "start": "electron ."

@@ -11,5 +11,12 @@ backend/models/whisper.cpp
 
 # Useless Scripts
 PROJECT_ANALYSIS.md
+steps.txt
+ImprovementSummary.txt
+Improvements.txt
 
+# Log files
+logs/
 
+# Test files
+backend/tests/

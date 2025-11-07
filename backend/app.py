@@ -3,6 +3,7 @@ import json
 import os
 from whisper_wrapper import transcribe
 from ollama_wrapper import get_raw_code
+from dual_stage_llm import improve_transcript, generate_code_from_task, CONFIG
 
 app = Flask(__name__)
 
@@ -32,27 +33,41 @@ def process_audio():
     if not transcribed_text:
         return jsonify({"error": "Transcription failed"}), 500
 
-    # 2. Load the master prompt
-    master_prompt = load_master_prompt()
-    if "Error" in master_prompt:
-        return jsonify({"error": master_prompt}), 500
+    if CONFIG.get('USE_DUAL_STAGE'):
+        try:
+            task = improve_transcript(transcribed_text)
+            if task.get('error'):
+                return jsonify(task), 400
+            
+            code = generate_code_from_task(task)
+            if isinstance(code, dict) and code.get('error'):
+                return jsonify(code), 400
 
-    # 3. Combine prompt and transcribed text
-    full_prompt = f"{master_prompt}\n\n{transcribed_text}"
+            return jsonify({"task": task, "code": code, "meta": {"improver_model": CONFIG['OLLAMA_MODEL'], "coder_model": CONFIG['OLLAMA_MODEL']}}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        # 2. Load the master prompt
+        master_prompt = load_master_prompt()
+        if "Error" in master_prompt:
+            return jsonify({"error": master_prompt}), 500
 
-    # 4. Get raw code from Ollama
-    raw_code = get_raw_code(full_prompt)
-    if not raw_code:
-        return jsonify({"error": "Failed to get code from the AI model"}), 500
+        # 3. Combine prompt and transcribed text
+        full_prompt = f"{master_prompt}\n\n{transcribed_text}"
 
-    # 5. Sanitize the output (basic stripping)
-    final_code = raw_code.strip()
+        # 4. Get raw code from Ollama
+        raw_code = get_raw_code(full_prompt)
+        if not raw_code:
+            return jsonify({"error": "Failed to get code from the AI model"}), 500
 
-    print(f"--- Code Generation Complete ---")
-    print(f"Final generated code:\n{final_code}")
-    print("------------------------------")
+        # 5. Sanitize the output (basic stripping)
+        final_code = raw_code.strip()
 
-    return jsonify({"code": final_code})
+        print(f"--- Code Generation Complete ---")
+        print(f"Final generated code:\n{final_code}")
+        print("------------------------------")
+
+        return jsonify({"code": final_code})
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5001)
