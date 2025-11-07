@@ -53,10 +53,20 @@ CODER_SCHEMA = {
 }
 
 def strip_fencing(text: str) -> str:
+    """Remove any markdown code fences or language labels like ```python."""
     if not text:
         return ""
-    # Use a regular expression to remove the fences
-    return re.sub(r"```(python)?\n?|\n?```", "", text).strip()
+    t = text.strip()
+    
+    # Remove common markdown fences
+    t = re.sub(r"^```[\w-]*\s*", "", t)      # remove opening fence with language
+    t = re.sub(r"```$", "", t)               # remove trailing fence at end
+    t = re.sub(r"```", "", t)                # remove any remaining fences
+    t = re.sub(r"^`+|`+$", "", t)            # remove stray backticks
+    
+    # Trim again and normalize line endings
+    t = t.strip().replace("\r\n", "\n")
+    return t
 
 def validate_schema(obj, schema):
     try:
@@ -100,8 +110,15 @@ def improve_transcript(transcript_text):
 
 def generate_code_from_task(task_json):
     system_prompt = (
-        "You are a precise software engineer. You receive a JSON task object. Produce the code to complete the task."
+    "You are a precise software engineer that outputs raw source code only. "
+    "You receive a JSON task description and must respond in JSON with keys: "
+    '"language", "files", "explanation" (optional), and "tests" (optional). '
+    "Each file object must contain a 'path' and a 'content' key. "
+    "In the 'content' field, write only the raw code — "
+    "DO NOT use markdown fences, backticks, syntax highlighting tags, or commentary. "
+    "No ```python``` fences, no markdown, no explanations outside the JSON structure."
     )
+
     user_input = json.dumps(task_json, ensure_ascii=False)
     try:
         raw_output = call_ollama_system(user_input, system_prompt, max_tokens=CONFIG['CODER_MAX_TOKENS'])
