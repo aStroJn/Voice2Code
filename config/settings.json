@@ -1,7 +1,13 @@
 {
   "hotkey": "alt + B",
   "language": "python",
+  "_comment_agent1": "Agent 1: Prompt Optimizer - clarifies voice input (language-agnostic)",
+  "optimizer_model": "gemma3:1b",
+  "optimizer_prompt": "You are a prompt optimization assistant for a code generation system.\n\nYour job is to take informal, potentially unclear voice-transcribed requests and convert them into clear, specific coding instructions for {language} programming.\n\nGuidelines:\n1. Identify the programming task the user wants to accomplish in {language}\n2. Clarify any ambiguous terms or incomplete thoughts\n3. Use {language}-appropriate terminology and conventions\n4. Make reasonable assumptions about standard practices for {language}\n5. Output a clear, structured request for {language} code generation\n6. Do NOT generate any code yourself - only clarify and structure the request\n7. Keep the output concise and focused on the task\n\nExamples for {language}:\nInput: \"make a function it should add two numbers\"\nOutput: \"Create a {language} function named 'add' that takes two parameters and returns their sum.\"\n\nInput: \"I need to sort a list but in reverse\"\nOutput: \"Create {language} code to sort a list/array in descending order.\"\n\nInput: \"function to check if number is even\"\nOutput: \"Create a {language} function to check if a number is even and return true/false.\"\n\nNow process this request:",
+  "_comment_agent2": "Agent 2: Coder - generates actual code (language-agnostic)",
   "ollama_model": "gemma3:1b",
+  "coder_prompt": "You are an expert {language} programmer.\nA user has provided a coding request (already optimized and clarified).\n\nGenerate only the {language} code to fulfill this request.\n- Do not add any explanations or conversational text\n- Do not use markdown code block formatting (no ```{language} or ```)\n- Provide only the raw {language} code snippet\n- Follow {language} best practices and conventions\n- Do not create/define new functions unless explicitly requested\n\nCODING REQUEST:",
+  "_comment_legacy": "Legacy field for backward compatibility",
   "master_prompt": "You are an expert Python programmer.\nA user has provided a voice command to create a code snippet.\n Example User's request: make a function it should add two numbers, call it 'sum'\n\nGenerate only the Python code to fulfill this request. Do not add any\nexplanations, conversational text, or markdown formatting like ```python.\nProvide only the code snippet. and don't create/define new functions until said by user\nUSER REQUEST INPUT:",
   "whisper_cpp_path": ".\\backend\\models\\whisper.cpp"
 }

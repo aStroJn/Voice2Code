@@ -32,13 +32,15 @@ function createWindow() {
 function createTray() {
   tray = new Tray(path.join(__dirname, 'assets/icons/icon.png')); // Ensure you have an icon file here
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Settings', type: 'normal', click: () => {
+    {
+      label: 'Settings', type: 'normal', click: () => {
         if (settingsWindow) {
           settingsWindow.focus();
         } else {
           createSettingsWindow();
         }
-      } },
+      }
+    },
     { label: 'Quit', type: 'normal', click: () => app.quit() }
   ]);
   tray.setToolTip('Voice2Code');
@@ -232,6 +234,27 @@ ipcMain.on('audio-data', (event, data) => {
         })
         .catch(error => {
           console.error('Error processing audio:', error);
+
+          // Show user-friendly error dialog
+          const { dialog } = require('electron');
+
+          let errorMessage = 'An error occurred while processing your voice command.';
+
+          // Check if it's a no_audio error (blank transcription)
+          if (error.response && error.response.data) {
+            if (error.response.data.error_type === 'no_audio') {
+              errorMessage = 'No audio was recorded. Please try speaking again.';
+            } else if (error.response.data.error) {
+              errorMessage = error.response.data.error;
+            }
+          }
+
+          dialog.showMessageBox({
+            type: 'error',
+            title: 'Voice2Code Error',
+            message: errorMessage,
+            buttons: ['OK']
+          });
         });
     });
   });

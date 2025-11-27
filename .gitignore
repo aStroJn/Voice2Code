@@ -10,6 +10,6 @@ backend/models/ggml-base.bin
 backend/models/whisper.cpp
 
 # Useless Scripts
-PROJECT_ANALYSIS.md
+
 
 

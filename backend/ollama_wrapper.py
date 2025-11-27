@@ -48,9 +48,8 @@ def get_raw_code(prompt: str) -> str:
         logging.error("Ollama endpoint or model not found in configuration.")
         return ""
 
-    logging.info("--- OLLAMA WRAPPER ---")
-    logging.info(f"Sending prompt to Ollama endpoint: {ollama_endpoint}")
-    logging.info(f"Using model: {ollama_model}")
+    logging.info("Sending prompt to Ollama endpoint: %s", ollama_endpoint)
+    logging.info("Using Coder Model (Agent 2): %s", ollama_model)
 
     # Retry mechanism
     max_retries = 3
@@ -75,7 +74,7 @@ def get_raw_code(prompt: str) -> str:
             message_content = response_data.get('response', '')
             
             if message_content:
-                logging.info(f"Ollama raw code: {message_content.strip()}")
+                logging.info("Agent 2 (Coder) Output: %s", message_content.strip()[:100] + "...")
                 return message_content.strip()
             else:
                 logging.warning("Could not find message content in Ollama response.")
