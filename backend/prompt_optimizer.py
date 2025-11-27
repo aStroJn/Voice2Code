@@ -75,10 +75,17 @@ def optimize_prompt(transcribed_text: str) -> str:
             # Combine the optimizer's system prompt with the user's transcribed text
             full_prompt = f"{optimizer_prompt}\n\nUSER REQUEST:\n{transcribed_text}"
             
+            # Build payload with LLM parameters
             payload = {
                 "model": optimizer_model,
                 "prompt": full_prompt,
-                "stream": False
+                "stream": False,
+                "options": {
+                    "temperature": config.get("optimizer_temperature", 0.3),
+                    "top_p": config.get("optimizer_top_p", 0.9),
+                    "top_k": config.get("optimizer_top_k", 40),
+                    "num_predict": config.get("optimizer_max_tokens", 200)
+                }
             }
 
             response = requests.post(

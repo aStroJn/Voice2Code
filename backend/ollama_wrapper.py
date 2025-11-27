@@ -57,10 +57,17 @@ def get_raw_code(prompt: str) -> str:
 
     for attempt in range(max_retries):
         try:
+            # Build payload with LLM parameters
             payload = {
                 "model": ollama_model,
                 "prompt": prompt,
-                "stream": False
+                "stream": False,
+                "options": {
+                    "temperature": config.get("coder_temperature", 0.2),
+                    "top_p": config.get("coder_top_p", 0.9),
+                    "top_k": config.get("coder_top_k", 40),
+                    "num_predict": config.get("coder_max_tokens", 500)
+                }
             }
 
             response = requests.post(
