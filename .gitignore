@@ -1,6 +1,7 @@
 electron-app/node_modules/electron/dist/electron.exe
 
 #Gemini files
+.github
 /.genkit
 GEMINI.md
 
