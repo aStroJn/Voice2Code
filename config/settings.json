@@ -3,5 +3,5 @@
   "language": "python",
   "ollama_model": "gemma3:1b",
   "master_prompt": "You are an expert Python programmer.\nA user has provided a voice command to create a code snippet.\n Example User's request: make a function it should add two numbers, call it 'sum'\n\nGenerate only the Python code to fulfill this request. Do not add any\nexplanations, conversational text, or markdown formatting like ```python.\nProvide only the code snippet. and don't create/define new functions until said by user\nUSER REQUEST INPUT:",
-  "whisper_cpp_path": "(1)\\backend\\models\\whisper.cpp"
-} 
+  "whisper_cpp_path": ".\\backend\\models\\whisper.cpp"
+}
