@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import json
 import os
+import time
 from whisper_wrapper import transcribe
 from prompt_optimizer import optimize_prompt
 from ollama_wrapper import get_raw_code
@@ -53,14 +54,22 @@ def process_audio():
     if not audio_path:
         return jsonify({"error": "Audio path not provided"}), 400
 
+    # Initialize timing dictionary
+    timings = {}
+    pipeline_start_time = time.time()
+
     print("\n" + "=" * 70)
     print("VOICE2CODE - TWO-AGENT PROCESSING PIPELINE")
     print("=" * 70)
 
     # STEP 1: Transcribe audio to text
-    print("\nSTEP 1: SPEECH TRANSCRIPTION")
+    print("\nSTEP 1: SPEECH TRANSCRIPTION (whisper.cpp)")
     print("-" * 70)
+    whisper_start = time.time()
     transcribed_text = transcribe(audio_path)
+    whisper_end = time.time()
+    timings['whisper'] = round(whisper_end - whisper_start, 3)
+    print(f"⏱️  Whisper Time: {timings['whisper']}s")
     
     # Check if transcription is blank, empty, or meaningless
     if not transcribed_text or transcribed_text.strip() == "":
@@ -93,7 +102,11 @@ def process_audio():
     print("\n" + "=" * 70)
     print("STEP 2: AGENT 1 - PROMPT OPTIMIZER")
     print("=" * 70)
+    agent1_start = time.time()
     optimized_prompt = optimize_prompt(transcribed_text)
+    agent1_end = time.time()
+    timings['agent1'] = round(agent1_end - agent1_start, 3)
+    print(f"⏱️  Agent 1 Time: {timings['agent1']}s")
     if not optimized_prompt:
         print("WARNING: Optimization failed, using original transcription")
         optimized_prompt = transcribed_text
@@ -118,7 +131,11 @@ def process_audio():
     print("-" * 70)
 
     # Get raw code from Ollama (Agent 2)
+    agent2_start = time.time()
     raw_code = get_raw_code(full_prompt)
+    agent2_end = time.time()
+    timings['agent2'] = round(agent2_end - agent2_start, 3)
+    print(f"⏱️  Agent 2 Time: {timings['agent2']}s")
     if not raw_code:
         return jsonify({"error": "Failed to get code from the AI model"}), 500
 
@@ -132,7 +149,21 @@ def process_audio():
     print(f"Generated Code:\n{final_code}")
     print("=" * 70 + "\n")
 
-    return jsonify({"code": final_code})
+    # Calculate total pipeline time
+    pipeline_end_time = time.time()
+    timings['total'] = round(pipeline_end_time - pipeline_start_time, 3)
+
+    # STEP 5: Timing Summary
+    print("\n" + "=" * 70)
+    print("STEP 5: TIMING SUMMARY")
+    print("=" * 70)
+    print(f"  🎤 Whisper (Speech-to-Text): {timings['whisper']}s")
+    print(f"  🧠 Agent 1 (Prompt Optimizer): {timings['agent1']}s")
+    print(f"  💻 Agent 2 (Code Generator): {timings['agent2']}s")
+    print(f"  ⏱️  Total Pipeline Time: {timings['total']}s")
+    print("=" * 70 + "\n")
+
+    return jsonify({"code": final_code, "timings": timings})
 
 
 if __name__ == '__main__':
